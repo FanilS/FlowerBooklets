@@ -9,7 +9,8 @@
         android:id="@+id/ivFlower"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@mipmap/ic_launcher" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/image_not_found_en" />
 
     <TextView
         android:id="@+id/tv_flower_name"
@@ -17,7 +18,9 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/ivFlower"
         android:layout_centerHorizontal="true"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:layout_marginTop="@dimen/custom_margin"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/title_text_size"
         tools:text="@string/app_name" />
 
     <TextView
@@ -26,7 +29,11 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/ivFlower"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/custom_margin"
+        android:gravity="center"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/secondary_text_size"
         tools:text="@string/app_name" />
 
 </RelativeLayout>

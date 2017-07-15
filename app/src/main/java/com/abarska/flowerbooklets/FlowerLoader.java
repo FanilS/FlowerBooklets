@@ -26,6 +26,6 @@ public class FlowerLoader extends AsyncTaskLoader<ArrayList<Flower>> {
 
     @Override
     public ArrayList<Flower> loadInBackground() {
-        return QueryUtils.fetchFlowerData(requestUrl);
+        return QueryUtils.fetchFlowerData(getContext(), requestUrl);
     }
 }

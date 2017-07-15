@@ -1,5 +1,6 @@
 package com.abarska.flowerbooklets;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
@@ -28,10 +29,15 @@ public class QueryUtils {
 
     private static final String LOG_TAG = "QueryUtils";
 
+    private static Context sContext;
+
     private QueryUtils() {
     }
 
-    public static ArrayList<Flower> fetchFlowerData(String requestUrl) {
+    public static ArrayList<Flower> fetchFlowerData(Context context, String requestUrl) {
+
+        sContext = context;
+
         URL url = createUrl(requestUrl);
         String jsonResponse = null;
         try {
@@ -40,7 +46,6 @@ public class QueryUtils {
             Log.e(LOG_TAG, "Problem making the HTTP request.", e);
         }
         ArrayList<Flower> flowers = extractFeatureFromJson(jsonResponse);
-        Log.d(LOG_TAG, "flowers.size() = " + flowers.size());
         return flowers;
     }
 
@@ -96,9 +101,9 @@ public class QueryUtils {
             JSONArray data = rootObject.getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject flower = (JSONObject) data.get(i);
-                String name = flower.getString("name");
+                String name = toTitleCase(flower.getString("name"));
                 Log.d(LOG_TAG, "name = " + name);
-                String season = flower.getString("best season");
+                String season = sContext.getString(R.string.blossom_season) + "\n" + toTitleCase(flower.getString("best season"));
                 Log.d(LOG_TAG, "season = " + season);
                 Bitmap pic = getBitmapPic(flower.getString("image link"));
                 Log.d(LOG_TAG, "link = " + flower.getString("image link"));
@@ -128,6 +133,10 @@ public class QueryUtils {
     }
 
     private static Bitmap getBitmapPic(String stringPicUrl) throws IOException {
+
+        Log.d(LOG_TAG, "pic URL = " + stringPicUrl);
+        Log.d(LOG_TAG, "rose URL = " + "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/images/photo_9705.jpg?itok=44DBZcZV");
+        Log.d(LOG_TAG, "pic URL = rose?" + (stringPicUrl.equals("https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/images/photo_9705.jpg?itok=44DBZcZV")));
 
         Bitmap resultBitmap = null;
         if (stringPicUrl == null) return resultBitmap;
@@ -166,5 +175,14 @@ public class QueryUtils {
                 inputStream.close();
         }
         return resultBitmap;
+    }
+
+    private static String toTitleCase(String input) {
+        String[] stringArray = input.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String s : stringArray) {
+            sb.append(Character.toUpperCase(s.charAt(0))).append(s.substring(1)).append(" ");
+        }
+        return sb.toString();
     }
 }

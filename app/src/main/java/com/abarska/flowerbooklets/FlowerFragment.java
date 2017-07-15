@@ -1,6 +1,7 @@
 package com.abarska.flowerbooklets;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,7 +20,11 @@ public class FlowerFragment extends Fragment {
     private String mSeason;
     private Bitmap mPic;
 
-    public FlowerFragment() {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.flower_list_item, container, false);
 
         Bundle inputArgs = getArguments();
 
@@ -34,22 +39,20 @@ public class FlowerFragment extends Fragment {
         if (inputArgs.containsKey(BUNDLE_KEY_PIC)) {
             mPic = inputArgs.getParcelable(BUNDLE_KEY_PIC);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.flower_list_item, container, false);
 
         TextView tvName = (TextView) rootView.findViewById(R.id.tv_flower_name);
-        tvName.setText(mName);
-
         TextView tvSeason = (TextView) rootView.findViewById(R.id.tv_blossom_season);
-        tvSeason.setText(mSeason);
-
         ImageView ivPic = (ImageView) rootView.findViewById(R.id.ivFlower);
-        ivPic.setImageBitmap(mPic);
+
+        if (mPic == null) {
+            tvName.setTextColor(Color.BLACK);
+            tvSeason.setTextColor(Color.BLACK);
+        } else {
+            ivPic.setImageBitmap(mPic);
+        }
+
+        tvName.setText(mName);
+        tvSeason.setText(mSeason);
 
         return rootView;
     }
