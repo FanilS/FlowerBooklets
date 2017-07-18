@@ -27,6 +27,9 @@ import java.util.concurrent.TimeUnit;
 
 public class QueryUtils {
 
+    private static final String URL_GET_FLOWERS = "http://52.51.81.191:85/getFlowers";
+    static final String URL_GET_TRANSLATE = "http://52.51.81.191:85/getTranslate";
+
     private static final String LOG_TAG = "QueryUtils";
 
     private static Context sContext;
@@ -34,11 +37,11 @@ public class QueryUtils {
     private QueryUtils() {
     }
 
-    public static ArrayList<Flower> fetchFlowerData(Context context, String requestUrl) {
+    public static ArrayList<Flower> fetchFlowerData(Context context) {
 
         sContext = context;
 
-        URL url = createUrl(requestUrl);
+        URL url = createUrl(URL_GET_FLOWERS);
         String jsonResponse = null;
         try {
             jsonResponse = makeHttpRequest(url);
@@ -49,7 +52,7 @@ public class QueryUtils {
         return flowers;
     }
 
-    private static URL createUrl(String requestUrl) {
+    static URL createUrl(String requestUrl) {
         URL url = null;
         try {
             url = new URL(requestUrl);
@@ -59,7 +62,7 @@ public class QueryUtils {
         return url;
     }
 
-    private static String makeHttpRequest(URL url) throws IOException {
+    static String makeHttpRequest(URL url) throws IOException {
         if (url == null) return null;
 
         HttpURLConnection connection = null;
@@ -101,22 +104,33 @@ public class QueryUtils {
             JSONArray data = rootObject.getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject flower = (JSONObject) data.get(i);
-                String name = toTitleCase(flower.getString("name"));
-                Log.d(LOG_TAG, "name = " + name);
-                String season = sContext.getString(R.string.blossom_season) + "\n" + toTitleCase(flower.getString("best season"));
-                Log.d(LOG_TAG, "season = " + season);
+                String name = flower.getString("name");
+                String season = flower.getString("best season");
                 Bitmap pic = getBitmapPic(flower.getString("image link"));
-                Log.d(LOG_TAG, "link = " + flower.getString("image link"));
-                Flower currentFlower = new Flower(name, season, pic);
+                Flower currentFlower = createFlower(name, season, pic);
                 flowers.add(currentFlower);
             }
         } catch (JSONException e) {
+            e.printStackTrace();
             Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("QueryUtils", "IOException", e);
         }
         return flowers;
+    }
+
+    private static Flower createFlower(String name, String season, Bitmap pic) {
+        String deviceLanguageCode = TranslateUtils.checkDeviceLanguage(sContext);
+        if (deviceLanguageCode.equals("en")) {
+            return new Flower(
+                    toTitleCase(name),
+                    sContext.getString(R.string.blossom_season) + "\n" + toTitleCase(season),
+                    pic
+            );
+        } else {
+            return TranslateUtils.getTranslatedFlower(deviceLanguageCode, name, season, pic);
+        }
     }
 
     private static String readFromStream(InputStream stream) throws IOException {

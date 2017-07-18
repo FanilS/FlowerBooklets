@@ -8,36 +8,47 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Flower>> {
 
-    public static final String URL_GET_FLOWERS = "http://52.51.81.191:85/getFlowers";
     private static final int LOADER_ID = 222;
     private static final String LOG_TAG = "MainActivity";
+    private LinearLayout mEmptyView;
+    private LinearLayout mDataView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mEmptyView = (LinearLayout) findViewById(R.id.ll_empty_view);
+        mDataView = (LinearLayout) findViewById(R.id.ll_data_view);
+
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
+            mEmptyView.setVisibility(View.VISIBLE);
+            mDataView.setVisibility(View.INVISIBLE);
             getSupportLoaderManager().initLoader(LOADER_ID, null, this);
         }
     }
 
     @Override
     public Loader<ArrayList<Flower>> onCreateLoader(int id, Bundle args) {
-        return new FlowerLoader(this, URL_GET_FLOWERS);
+        return new FlowerLoader(this);
     }
 
     @Override
     public void onLoadFinished(Loader<ArrayList<Flower>> loader, ArrayList<Flower> data) {
 
         if (!data.isEmpty()) {
+
+            mEmptyView.setVisibility(View.INVISIBLE);
+            mDataView.setVisibility(View.VISIBLE);
 
             ViewPager viewPager = (ViewPager) findViewById(R.id.container);
             FlowerPagerAdapter adapter = new FlowerPagerAdapter(data, getSupportFragmentManager());

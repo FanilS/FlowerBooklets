@@ -11,11 +11,8 @@ import java.util.ArrayList;
 
 public class FlowerLoader extends AsyncTaskLoader<ArrayList<Flower>> {
 
-    private String requestUrl;
-
-    public FlowerLoader(Context context, String url) {
+    public FlowerLoader(Context context) {
         super(context);
-        requestUrl = url;
     }
 
     @Override
@@ -26,6 +23,6 @@ public class FlowerLoader extends AsyncTaskLoader<ArrayList<Flower>> {
 
     @Override
     public ArrayList<Flower> loadInBackground() {
-        return QueryUtils.fetchFlowerData(getContext(), requestUrl);
+        return QueryUtils.fetchFlowerData(getContext());
     }
 }
