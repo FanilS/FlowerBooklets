@@ -29,12 +29,9 @@ class GreetingLoader extends AsyncTaskLoader<String> {
         try {
             jsonResponse = QueryUtils.makeHttpRequest(translateURL);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+            Log.e(LOG_TAG, "Problem making the HTTP request", e);
         }
 
-        String greetingMessage = TranslateUtils.getGreetingMessage(jsonResponse, locale);
-        Log.d(LOG_TAG, greetingMessage);
-
-        return greetingMessage;
+        return TranslateUtils.getGreetingMessage(jsonResponse, locale);
     }
 }

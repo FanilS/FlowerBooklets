@@ -27,29 +27,24 @@ import java.util.concurrent.TimeUnit;
 
 public class QueryUtils {
 
-    private static final String URL_GET_FLOWERS = "http://52.51.81.191:85/getFlowers";
+    static final String URL_GET_FLOWERS = "http://52.51.81.191:85/getFlowers";
     static final String URL_GET_TRANSLATE = "http://52.51.81.191:85/getTranslate";
 
     private static final String LOG_TAG = "QueryUtils";
 
-    private static Context sContext;
-
     private QueryUtils() {
     }
 
-    public static ArrayList<Flower> fetchFlowerData(Context context) {
-
-        sContext = context;
-
-        URL url = createUrl(URL_GET_FLOWERS);
-        String jsonResponse = null;
+    static ArrayList<Flower> fetchFlowerData(Context context, URL flowersUrl, URL translateUrl) {
+        String flowersJsonResponse = null;
+        String translateJsonResponse = null;
         try {
-            jsonResponse = makeHttpRequest(url);
+            flowersJsonResponse = makeHttpRequest(flowersUrl);
+            translateJsonResponse = makeHttpRequest(translateUrl);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Problem making the HTTP request.", e);
         }
-        ArrayList<Flower> flowers = extractFeatureFromJson(jsonResponse);
-        return flowers;
+        return extractFeatureFromJson(context, flowersJsonResponse, translateJsonResponse);
     }
 
     static URL createUrl(String requestUrl) {
@@ -93,21 +88,23 @@ public class QueryUtils {
         return jsonResponse;
     }
 
-    private static ArrayList<Flower> extractFeatureFromJson(String json) {
+    private static ArrayList<Flower> extractFeatureFromJson(Context context, String flowersJsonResponse, String translateJsonResponse) {
 
-        if (TextUtils.isEmpty(json)) return null;
+        if (TextUtils.isEmpty(flowersJsonResponse) || TextUtils.isEmpty(translateJsonResponse))
+            return null;
 
+        String locale = TranslateUtils.checkDeviceLanguage(context);
         ArrayList<Flower> flowers = new ArrayList<>();
 
         try {
-            JSONObject rootObject = new JSONObject(json);
+            JSONObject rootObject = new JSONObject(flowersJsonResponse);
             JSONArray data = rootObject.getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
                 JSONObject flower = (JSONObject) data.get(i);
                 String name = flower.getString("name");
                 String season = flower.getString("best season");
                 Bitmap pic = getBitmapPic(flower.getString("image link"));
-                Flower currentFlower = createFlower(name, season, pic);
+                Flower currentFlower = createFlower(context, translateJsonResponse, name, season, pic);
                 flowers.add(currentFlower);
             }
         } catch (JSONException e) {
@@ -120,17 +117,9 @@ public class QueryUtils {
         return flowers;
     }
 
-    private static Flower createFlower(String name, String season, Bitmap pic) {
-        String deviceLanguageCode = TranslateUtils.checkDeviceLanguage(sContext);
-        if (deviceLanguageCode.equals("en")) {
-            return new Flower(
-                    toTitleCase(name),
-                    sContext.getString(R.string.blossom_season) + "\n" + toTitleCase(season),
-                    pic
-            );
-        } else {
-            return TranslateUtils.getTranslatedFlower(deviceLanguageCode, name, season, pic);
-        }
+    private static Flower createFlower(Context context, String translateJsonResponse, String name, String season, Bitmap pic) {
+        String deviceLanguage = TranslateUtils.checkDeviceLanguage(context);
+        return TranslateUtils.getTranslatedFlower(translateJsonResponse, deviceLanguage, name, season, pic);
     }
 
     private static String readFromStream(InputStream stream) throws IOException {

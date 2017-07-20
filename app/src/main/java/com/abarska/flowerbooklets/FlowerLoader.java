@@ -3,6 +3,7 @@ package com.abarska.flowerbooklets;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -23,6 +24,8 @@ public class FlowerLoader extends AsyncTaskLoader<ArrayList<Flower>> {
 
     @Override
     public ArrayList<Flower> loadInBackground() {
-        return QueryUtils.fetchFlowerData(getContext());
+        URL flowersUrl = QueryUtils.createUrl(QueryUtils.URL_GET_FLOWERS);
+        URL translateUrl = QueryUtils.createUrl(QueryUtils.URL_GET_TRANSLATE);
+        return QueryUtils.fetchFlowerData(getContext(), flowersUrl, translateUrl);
     }
 }

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class FlowerPagerAdapter extends FragmentPagerAdapter {
 
     private ArrayList<Flower> mFlowers;
-    private static final String LOG_TAG = "FlowerPagerAdapter";
 
     public static String BUNDLE_KEY_NAME = "bundle-key-name";
     public static String BUNDLE_KEY_SEASON = "bundle-key-season";

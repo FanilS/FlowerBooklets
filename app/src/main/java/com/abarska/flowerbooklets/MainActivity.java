@@ -16,8 +16,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Flower>> {
 
-    private static final int LOADER_ID = 222;
-    private static final String LOG_TAG = "MainActivity";
+    private static final int FLOWER_LOADER_ID = 222;
     private LinearLayout mEmptyView;
     private LinearLayout mDataView;
 
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
             mEmptyView.setVisibility(View.VISIBLE);
             mDataView.setVisibility(View.INVISIBLE);
-            getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+            getSupportLoaderManager().initLoader(FLOWER_LOADER_ID, null, this);
         }
     }
 

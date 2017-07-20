@@ -10,6 +10,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,8 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SplashActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
 
-    private static final int LOADER_ID = 111;
-    private static final String LOG_TAG = "SplashActivity";
+    private static final int GREETING_LOADER_ID = 111;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,7 +29,9 @@ public class SplashActivity extends AppCompatActivity implements LoaderManager.L
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
-            getSupportLoaderManager().initLoader(LOADER_ID, null, this).forceLoad();
+            getSupportLoaderManager().initLoader(GREETING_LOADER_ID, null, this).forceLoad();
+        } else {
+            Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
         }
     }
 
